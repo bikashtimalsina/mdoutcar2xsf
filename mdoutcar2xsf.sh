@@ -18,13 +18,19 @@ echo "The number of ions in the system is: $nions"
 cat $1|grep -A `echo "$nions+1"|bc` "POSITION">pos-force.tmp
 awk '/--/{flag=1;next}/--/{flag=0}flag' pos-force.tmp>pos-force_new.tmp
 mv pos-force_new.tmp pos-force.tmp
-sed -i '1 i POSITION                                       TOTAL-FORCE \(eV\/Angst\)' pos-force.tmp
+echo "POSITION                                       TOTAL-FORCE (eV/Angst)">pos-force_new.tmp
+cat pos-force.tmp>>pos-force_new.tmp
+mv pos-force_new.tmp pos-force.tmp
+echo " POSITION                                       TOTAL-FORCE (eV/Angst)">>pos-force.tmp
 cat $1|grep -A 3 "direct lattice vectors">lattice.tmp
-sed -i '1 i --' lattice.tmp
+echo "--">lattice_new.tmp
+cat lattice.tmp>>lattice_new.tmp
+mv lattice_new.tmp lattice.tmp
 awk '/--/{flag=1;next}/--/{flag=0}flag' lattice.tmp>lattice_new.tmp
 mv lattice_new.tmp lattice.tmp
 cat lattice.tmp|sed -n "5,`echo "$nconfig*4+4"|bc`"p>lattice_new.tmp
 mv lattice_new.tmp lattice.tmp
+echo "      direct lattice vectors                 reciprocal lattice vectors">>lattice.tmp
 cat $1|grep "free  energy   TOTEN  =">energy.tmp
 cat $1|grep VRHFIN|awk -F ":" '{print $1}'|awk -F "=" '{print $2}'>atom_type.tmp
 atom_num=`cat atom_type.tmp|wc -l`
