@@ -18,7 +18,7 @@ echo "The number of ions in the system is: $nions"
 cat $1|grep -A `echo "$nions+1"|bc` "POSITION">pos-force.tmp
 awk '/--/{flag=1;next}/--/{flag=0}flag' pos-force.tmp>pos-force_new.tmp
 mv pos-force_new.tmp pos-force.tmp
-echo "POSITION                                       TOTAL-FORCE (eV/Angst)">pos-force_new.tmp
+echo " POSITION                                       TOTAL-FORCE (eV/Angst)">pos-force_new.tmp
 cat pos-force.tmp>>pos-force_new.tmp
 mv pos-force_new.tmp pos-force.tmp
 echo " POSITION                                       TOTAL-FORCE (eV/Angst)">>pos-force.tmp
@@ -39,9 +39,38 @@ if [ -f "./atom_num.tmp" ]
 then
 rm atom_num.tmp
 fi
+atom_tag=""
 for ((j=1; j<=${atom_num}; j++ )){
 atom_n=`cat $1|grep "ions per type"|awk -F "=" '{print $2}'|awk -v var="$j" -F " " '{print $var}'`
+for (( k=1; k<=${atom_n}; k++ )){
+atom_tag+="`cat atom_type.tmp|sed -n ${j}p` "
+}
 echo $atom_n>>atom_num.tmp
 }
 echo "The number of each atoms in the OUTCAR is: `cat atom_num.tmp|xargs`"
+awk '/direct/{flag=1;next}/direct/{flag=0}flag' lattice.tmp>lattice_new.tmp
+cat lattice_new.tmp|awk '//{print $1,$2,$3}'>lattice.tmp
+rm lattice_new.tmp
+awk '/ POSITION/{flag=1;next}/ POSITION/{flag=0}flag' pos-force.tmp>pos-force_new.tmp
+mv pos-force_new.tmp pos-force.tmp
+#for vertical printing
+echo $atom_tag|awk -v FS=" " -v OFS='\n' '{$1=$1}1'>atom_print.tmp
+if [ -d "./xsf" ]
+then
+rm -rf ./xsf
+fi
+mkdir ./xsf
+for (( i=1; i<=$nconfig; i++ )){
+echo "# total energy= `cat energy.tmp|sed -n ${i}p|awk -F "=" '{print $2}'`" >> ./xsf/structure${i}.xsf
+echo "                                      " >> ./xsf/structure${i}.xsf
+echo "CRYSTAL" >> ./xsf/structure${i}.xsf
+echo "PRIMVEC" >> ./xsf/structure${i}.xsf 
+slat=`echo "3*${i}-2"|bc`
+elat=`echo "3*${i}"|bc`
+cat lattice.tmp|sed -n "${slat},${elat}"p >> ./xsf/structure${i}.xsf
+echo "PRIMCOORD" >> ./xsf/structure${i}.xsf
+pfstart=`echo "${nions}*${i}-(${nions}-1)"|bc`
+pfend=`echo "(${nions}+1)*${i}-1"|bc`
+echo "$pfstart $pfend"
+}
 fi
