@@ -34,8 +34,14 @@ echo "      direct lattice vectors                 reciprocal lattice vectors">>
 cat $1|grep "free  energy   TOTEN  =">energy.tmp
 cat $1|grep VRHFIN|awk -F ":" '{print $1}'|awk -F "=" '{print $2}'>atom_type.tmp
 atom_num=`cat atom_type.tmp|wc -l`
+echo "The type of atom in the OUTCAR is: `cat atom_type.tmp|xargs`"
+if [ -f "./atom_num.tmp" ]
+then
+rm atom_num.tmp
+fi
 for ((j=1; j<=${atom_num}; j++ )){
 atom_n=`cat $1|grep "ions per type"|awk -F "=" '{print $2}'|awk -v var="$j" -F " " '{print $var}'`
-echo $atom_n
+echo $atom_n>>atom_num.tmp
 }
+echo "The number of each atoms in the OUTCAR is: `cat atom_num.tmp|xargs`"
 fi
