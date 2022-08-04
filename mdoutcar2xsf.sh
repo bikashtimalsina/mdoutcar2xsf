@@ -40,8 +40,10 @@ then
 rm atom_num.tmp
 fi
 atom_tag=""
+atom_num_tag=""
 for ((j=1; j<=${atom_num}; j++ )){
 atom_n=`cat $1|grep "ions per type"|awk -F "=" '{print $2}'|awk -v var="$j" -F " " '{print $var}'`
+atom_num_tag+="`echo $atom_n` "
 for (( k=1; k<=${atom_n}; k++ )){
 atom_tag+="`cat atom_type.tmp|sed -n ${j}p` "
 }
@@ -69,8 +71,13 @@ slat=`echo "3*${i}-2"|bc`
 elat=`echo "3*${i}"|bc`
 cat lattice.tmp|sed -n "${slat},${elat}"p >> ./xsf/structure${i}.xsf
 echo "PRIMCOORD" >> ./xsf/structure${i}.xsf
-pfstart=`echo "${nions}*${i}-(${nions}-1)"|bc`
-pfend=`echo "(${nions}+1)*${i}-1"|bc`
-echo "$pfstart $pfend"
+echo ${atom_num_tag} >> ./xsf/structure${i}.xsf
+pfstart=`echo "(${i}-1)*${nions}+1"|bc`
+pfend=`echo "${nions}*${i}"|bc`
+#echo "$pfstart $pfend"
+sed -n "${pfstart},${pfend}"p pos-force.tmp > posfor.tmp
+paste -d' ' atom_print.tmp posfor.tmp > pos_new.tmp
+cat pos_new.tmp >> ./xsf/structure${i}.xsf
 }
+rm *.tmp
 fi
