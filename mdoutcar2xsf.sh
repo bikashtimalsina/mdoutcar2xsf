@@ -71,7 +71,7 @@ slat=`echo "3*${i}-2"|bc`
 elat=`echo "3*${i}"|bc`
 cat lattice.tmp|sed -n "${slat},${elat}"p >> ./xsf/structure${i}.xsf
 echo "PRIMCOORD" >> ./xsf/structure${i}.xsf
-echo ${atom_num_tag} >> ./xsf/structure${i}.xsf
+echo "${nions} 1" >> ./xsf/structure${i}.xsf
 pfstart=`echo "(${i}-1)*${nions}+1"|bc`
 pfend=`echo "${nions}*${i}"|bc`
 #echo "$pfstart $pfend"
