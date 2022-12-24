@@ -23,6 +23,7 @@ cat pos-force.tmp>>pos-force_new.tmp
 mv pos-force_new.tmp pos-force.tmp
 echo " POSITION                                       TOTAL-FORCE (eV/Angst)">>pos-force.tmp
 cat $1|grep -A 3 "direct lattice vectors">lattice.tmp
+cat $1|grep -A 14 "FORCE on cell =-STRESS"|grep Total|awk -F " " '{print $2,$3,$4,$5,$6,$7}'>>virial.tmp
 echo "--">lattice_new.tmp
 cat lattice.tmp>>lattice_new.tmp
 mv lattice_new.tmp lattice.tmp
@@ -71,6 +72,7 @@ sed -n "${dlstart},${dlend}"p lattice.tmp > latvec.txt
 cat latvec.txt|tr -s "\n" " " > testlattxyz.tmp
 latt=`cat testlattxyz.tmp|awk -F " " '{print $1,$2,$3,$4,$5,$6,$7,$8,$9}'`
 ener=`sed -n ${i}p energy.tmp|awk -F "=" '{print $2}'|awk -F " " '{print $1}'`
+viri=`sed -n ${i}p virial.tmp`
 echo $nions >> ./xyz/snapshots-${i}-each.xyz
 echo "Lattice=\"$latt\" Energy=$ener Virial=\"$viri\" Properties=species:S:1:pos:R:3:force:R:3">>./xyz/snapshots-${i}-each.xyz
 endind=`echo "$nions+$startind-1"|bc`
