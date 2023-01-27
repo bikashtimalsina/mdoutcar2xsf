@@ -180,7 +180,7 @@ def write_trajectory_xyz(fname,ind):
 	index=[i for i in range(len(ionsname))]
 	for i in range(len(ionspertype)):
 	    for j in range(ionspertype[i]):
-	        typemtp.append(index[i])
+	        typemtp.append(ionsname[i])
 	stress=sysinfo['stress']
 	energy=sysinfo['energy']
 	lattice=data.get_lattice_vectors()
