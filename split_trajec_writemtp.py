@@ -170,6 +170,50 @@ def write_trajectory(fname,ind):
 			file.writelines("\n")
 		file.close()
 
+def write_trajectory_xyz(fname,ind):
+	data=mtpoutcar(fname)
+	sysinfo=data.get_sysinfo_energy()
+	nions=sysinfo['ions']
+	ionsname=sysinfo['ions_name']
+	ionspertype=sysinfo['ions_per_type']
+	typemtp=[]
+	index=[i for i in range(len(ionsname))]
+	for i in range(len(ionspertype)):
+	    for j in range(ionspertype[i]):
+	        typemtp.append(index[i])
+	stress=sysinfo['stress']
+	energy=sysinfo['energy']
+	lattice=data.get_lattice_vectors()
+	direct_lattice=lattice['direct']
+	position_energy=data.get_pos_forces(nions)
+	posenergy=position_energy['position-force']
+	shuf_trajec=[i for i in range(len(energy))]
+	np.random.shuffle(shuf_trajec)
+	# Write in Atom object for each configuration/trajectory and
+	# get minimal distance using ASE
+	for i in range(len(energy)):
+		each_fwrite="./MTP-XYZ/"+"data-"+"{}-{}".format(ind,i+1)+".xyz"
+		with open(each_fwrite,"w") as file:
+			file.writelines("{}".format(nions))
+			file.writelines("\n")
+			lattice_str="Lattice=\"{:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f}\"".format(direct_lattice[shuf_trajec[i]][0][0],\
+				direct_lattice[shuf_trajec[i]][0][1],direct_lattice[shuf_trajec[i]][0][2],direct_lattice[shuf_trajec[i]][1][0],\
+				direct_lattice[shuf_trajec[i]][1][1],direct_lattice[shuf_trajec[i]][1][2],direct_lattice[shuf_trajec[i]][2][0],
+				direct_lattice[shuf_trajec[i]][2][1],direct_lattice[shuf_trajec[i]][2][2])
+			energy_str="Energy={}".format(energy[shuf_trajec[i]])
+			stress_str="Virial=\"{:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f}\"".format(stress[shuf_trajec[i]][0],stress[shuf_trajec[i]][5],\
+				stress[shuf_trajec[i]][4],stress[shuf_trajec[i]][5],stress[shuf_trajec[i]][1],stress[shuf_trajec[i]][3],stress[shuf_trajec[i]][4],stress[shuf_trajec[i]][3],\
+				stress[shuf_trajec[i]][2])
+			other_str="Properties=species:S:1:pos:R:3:force:R:3"
+			header_one=lattice_str+" "+energy_str+" "+stress_str+" "+other_str
+			file.writelines(header_one)
+			file.writelines("\n")
+			for k in range(nions):
+				file.writelines("{} \t {:.8f} \t {:.8f} \t {:.8f} \t {:.8f} \t {:.8f} \t {:.8f}".format(typemtp[k],posenergy[shuf_trajec[i]][k,0],posenergy[shuf_trajec[i]][k,1],\
+				posenergy[shuf_trajec[i]][k,2],posenergy[shuf_trajec[i]][k,3],posenergy[shuf_trajec[i]][k,4],posenergy[shuf_trajec[i]][k,5]))
+				file.writelines("\n")
+		file.close()
+
 dirname=str(sys.argv[1])
 if dirname[-1]=="/":
 	dirname=dirname
@@ -193,10 +237,14 @@ else:
 		print("Total OUTCAR directories excluding debug: {}".format(len(dirs_nodebug)))
 		if os.path.exists("./MTP-CFG"):
 			shutil.rmtree("./MTP-CFG")
+		if os.path.exists("./MTP-XYZ"):
+			shutil.rmtree("./MTP-XYZ")
 		else:
 			os.mkdir("./MTP-CFG")
+			os.mkdir("./MTP-XYZ")
 		for i in range(len(dirs_nodebug)):
 			write_trajectory(dirs_nodebug[i],i+1)
+			write_trajectory_xyz(dirs_nodebug[i],i+1)
 			print("done directory: {}".format(dirs_nodebug[i]))
 
 	else:
@@ -204,4 +252,5 @@ else:
 		print("Total OUTCAR directories: {}".format(len(dirs)))
 		for i in range(len(dirs)):
 			write_trajectory(dirs[i],i+1)
+			write_trajectory_xyz(dirs[i],i+1)
 			print("done directory: {}".format(dirs[i]))
