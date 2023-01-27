@@ -217,8 +217,10 @@ def write_trajectory_xyz(fname,ind):
 dirname=str(sys.argv[1])
 if dirname[-1]=="/":
 	dirname=dirname
+	print(dirname)
 else:
 	dirname=dirname+"/"
+	print(dirname)
 dirsearch=dirname+"**/OUTCAR"
 dirs=glob.glob(dirsearch,recursive=True)
 if len(dirs)==0:
@@ -250,6 +252,13 @@ else:
 	else:
 		print("debug folders also added, if you do not want to add debug folder set nodebug=True while executing.")
 		print("Total OUTCAR directories: {}".format(len(dirs)))
+		if len(sys.argv)==2:
+			if os.path.exists("./MTP-CFG"):
+				shutil.rmtree("./MTP-CFG")
+			os.mkdir("./MTP-CFG")
+			if os.path.exists("./MTP-XYZ"):
+				shutil.rmtree("./MTP-XYZ")
+			os.mkdir("./MTP-XYZ")
 		for i in range(len(dirs)):
 			write_trajectory(dirs[i],i+1)
 			write_trajectory_xyz(dirs[i],i+1)
