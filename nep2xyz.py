@@ -5,9 +5,9 @@ import glob
 import shutil
 
 """To run: 
-python nep2xyz.py train
+python nep2xyz.py train_filename train
 OR
-python nep2xyz.py test"""
+python nep2xyz.py test_filename test"""
 
 
 if len(sys.argv) <= 1:
