@@ -4,6 +4,12 @@ import sys
 import glob
 import shutil
 
+"""To run: 
+python nep2xyz.py train
+OR
+python nep2xyz.py test"""
+
+
 if len(sys.argv) <= 1:
 	print("No file provided: ")
 else:
