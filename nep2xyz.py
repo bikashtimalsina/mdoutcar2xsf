@@ -45,11 +45,11 @@ else:
 			with open(fwritename,"w") as file:
 				file.writelines(natPstr[i][0])
 				file.writelines("\n")
-				latt="Lattice={} ".format(structure[i][1])
-				energy="Energy={} ".format(structure[i][0].split()[0])
+				latt="\"Lattice={} \"".format(structure[i][1])
+				energy="\"Energy={} \"".format(structure[i][0].split()[0])
 				vic=structure[i][0].split()
-				viri="Virial={} {} {} {} {} {} {} {} {} ".format(vic[1],vic[4],vic[6],vic[4],vic[2],vic[5],vic[6],vic[5],vic[3])
-				other_text="Properties=species:S:1:pos:R:3:force:R:3"
+				viri="\"Virial={} {} {} {} {} {} {} {} {} \"".format(vic[1],vic[4],vic[6],vic[4],vic[2],vic[5],vic[6],vic[5],vic[3])
+				other_text="\"Properties=species:S:1:pos:R:3:force:R:3\""
 				header=latt+energy+viri+other_text
 				file.writelines(header)
 				file.writelines("\n")
