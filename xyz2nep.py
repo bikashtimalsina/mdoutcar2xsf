@@ -80,7 +80,8 @@ class convert_nep:
 						file.writelines("\n")
 		file.close()
 		return Natoms, Energy, Lattice, Virial, body
-checkf=convert_nep("./train.xyz")
+fname=sys.argv[1]
+checkf=convert_nep(fname)
 data=checkf.tonepin()
 natoms=data[0]
 energy=data[1]
