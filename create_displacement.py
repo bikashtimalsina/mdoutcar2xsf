@@ -32,11 +32,14 @@ for i in range(len(elem_order)):
 	for j in range(len(elem_order[i])):
 		each_dir.append(potcar_dir+elem_order[i][j]+"/POTCAR")
 	pot_dir_path.append(each_dir)
-#fcat="cat {} {} {} > POTCAR".format(pot_dir_path[0][0],pot_dir_path[0][1],pot_dir_path[0][2])
-print(pot_dir_path)
-#system(fcat)
-if os.path.isfile("./EachDisplacement"):
+if os.path.exists("./EachDisplacement"):
 	shutil.rmtree("./EachDisplacement")
+os.mkdir("./EachDisplacement")
 for i in range(len(pot_dir_path)):
+	dirname="./EachDisplacement/"+"{}".format(i+1)
+	os.makedirs(dirname,exist_ok=True)
+	potcarname=dirname+"/POTCAR"
+	fcat="cat {} {} {} > {}".format(pot_dir_path[i][0],pot_dir_path[i][1],pot_dir_path[i][2],potcarname)
+	system(fcat)
+	print(pot_dir_path[i])
 	
-
