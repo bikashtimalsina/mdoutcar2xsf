@@ -106,3 +106,7 @@ for i in range(len(pot_dir_path)):
 		file.writelines("\n")
 		file.writelines("{} {}".format(primcell,nsnap))
 	file.close()
+	shutil.copy(fname+"INCAR",dirname)
+	shutil.copy(fname+"KPOINTS",dirname)
+	shutil.copy(fname+"run.slurm",dirname)
+	
