@@ -5,6 +5,36 @@ import sys
 from os import system
 import shutil
 import os
+from sortedcollections import OrderedSet
+
+def write_poscar(fname,lattice,atom,atNum,pos):
+	with open(fname,"w") as file:
+		file.writelines("POSCAR written by SC4")
+		file.writelines("\n")
+		file.writelines("1.0")
+		file.writelines("\n")
+		file.writelines("{} 0.0000 0.0000".format(lattice.strip()))
+		file.writelines("\n")
+		file.writelines("0.0000 {} 0.0000".format(lattice.strip()))
+		file.writelines("\n")
+		file.writelines("0.0000 0.0000 {}".format(lattice.strip()))
+		file.writelines("\n")
+		atomname=''
+		atomNumber=''
+		for i in range(len(atom)):
+			atomname += atom[i]+" "
+			atomNumber += str(atNum[i])+" "
+		file.writelines(atomname)
+		file.writelines("\n")
+		file.writelines(atomNumber)
+		file.writelines("\n")
+		file.writelines("Cartesian")
+		file.writelines("\n")
+		for i in range(len(pos)):
+			file.writelines("{} {} {}".format(pos[i][0],pos[i][1],pos[i][2]))
+			file.writelines("\n")
+	file.close()
+
 elements={'H': '1.007', 'He': '4.002', 'Li': '6.941', 'Be': '9.012', 'B': '10.811', 
 'C': '12.011', 'N': '14.007', 'O': '15.999', 'F': '18.998', 'Ne': '20.18', 'Na': '22.99',
  'Mg': '24.305', 'Al': '26.982', 'Si': '28.086', 'P': '30.974', 'S': '32.065', 'Cl': '35.453', 
@@ -99,7 +129,7 @@ for i in range(len(pot_dir_path)):
 		freq=400
 		temperature=300
 		primcell=1
-		nsnap=11
+		nsnap=10
 		file.writelines(str(freq))
 		file.writelines("\n")
 		file.writelines(str(temperature))
@@ -110,5 +140,40 @@ for i in range(len(pot_dir_path)):
 	shutil.copy(fname+"KPOINTS",dirname)
 	shutil.copy(fname+"run.slurm",dirname)
 system("./create_displacement.sh")
-eachsnapshots=glob.glob("./EachDisplacement/**/snap_00[1-9].xyz",recursive=True)
-print(eachsnapshots)
+eachsnapshots=glob.glob("./EachDisplacement/**/snap_[0-9]*.xyz",recursive=True)
+for i in range(len(eachsnapshots)):
+	subdir=eachsnapshots[i].split("/")
+	sdor=subdir[0]+"/"+subdir[1]+"/"+subdir[2]+"/"
+	sdircreate=subdir[0]+"/"+subdir[1]+"/"+subdir[2]+"/"
+	esnapdir=eachsnapshots[i].split("/")[3][5:8]
+	sdircreate=sdircreate+esnapdir
+	os.makedirs(sdircreate,exist_ok=True)
+	discoord=[]
+	atomcount=[]
+	with open(eachsnapshots[i],"r") as file:
+		for line in file:
+			atomcount.append(line.split()[0])
+			discoord.append(line.split())
+	file.close()
+	uniqueAtom=list(OrderedSet(atomcount))
+	eachat=[]
+	for j in range(len(uniqueAtom)):
+		counter=0
+		for k in range(len(atomcount)):
+			if uniqueAtom[j]==atomcount[k]:
+				counter += 1
+		eachat.append(counter)
+	with open(sdor+"cell.inp","r") as file:
+		for index,line in enumerate(file):
+			if index==2:
+				lattice_len=line
+	file.close()
+	pos=[]
+	for j in range(len(discoord)):
+		pos.append([discoord[j][1],discoord[j][2],discoord[j][3]])
+	write_poscar(sdircreate+"/POSCAR",lattice_len,uniqueAtom,eachat,pos)
+	shutil.copy(sdor+"INCAR",sdircreate)
+	shutil.copy(sdor+"KPOINTS",sdircreate)
+	shutil.copy(sdor+"POTCAR",sdircreate)
+	shutil.copy(sdor+"run.slurm",sdircreate)
+	
