@@ -109,4 +109,6 @@ for i in range(len(pot_dir_path)):
 	shutil.copy(fname+"INCAR",dirname)
 	shutil.copy(fname+"KPOINTS",dirname)
 	shutil.copy(fname+"run.slurm",dirname)
-	
+system("./create_displacement.sh")
+eachsnapshots=glob.glob("./EachDisplacement/**/snap_00[1-9].xyz",recursive=True)
+print(eachsnapshots)
