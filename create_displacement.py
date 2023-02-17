@@ -93,7 +93,7 @@ for i in range(len(pot_dir_path)):
 		file.writelines("\n")
 		file.writelines("0 {} 0".format(supercellsize))
 		file.writelines("\n")
-		file.writelines("0 0 {}".format(suercellsize))
+		file.writelines("0 0 {}".format(supercellsize))
 	file.close()
 	with open(dirname+"/snaps.inp","w") as file:
 		freq=400
