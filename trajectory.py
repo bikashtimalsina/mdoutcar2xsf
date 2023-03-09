@@ -98,5 +98,6 @@ if os.path.exists("./MTP-XYZ"):
 		shutil.rmtree("./MTP-XYZ")
 os.makedirs("./MTP-XYZ",exist_ok=True)
 for i in range(len(dir_above_ten_traj)):
-	if len(index_below_conv[i]) > 0:
-		md.write_trajectory_xyz(ndir_above_ten_traj[i]+"OUTCAR",i+1,index_below_conv[i])
+	if os.path.exists(ndir_above_ten_traj[i]+"OUTCAR"):
+		if len(index_below_conv[i]) > 0:
+			md.write_trajectory_xyz(ndir_above_ten_traj[i]+"OUTCAR",i+1,index_below_conv[i])
