@@ -3,6 +3,7 @@ import json
 from os import system
 base_url = 'http://nomad-lab.eu/prod/v1/api/v1'
 import os
+import shutil
 response_page = requests.post(
     f'{base_url}/entries/query',
     json={
@@ -52,13 +53,20 @@ for i in range(len(upload_ids)):
     postpath="?offset=0&length=-1&decompress=false&ignore_mime_type=false&compress=false"
     wget_path.append(headtext+prepath+"%2FOUTCAR"+postpath)
     wget_filename.append(prepath+"%2FOUTCAR"+postpath)
-for i in range(len(wget_path)):
-    fd=requests.get(wget_path[i])
-    if fd.status_code==200:
-        open("OUTCAR-{}".format(i+1),"wb").write(fd.content)
-        print("file created: {}".format(wget_path[i]))
-    if fd.status_code==404:
-        print("file not found: {}".format(wget_path[i]))
-    print(raw_path[i])
-    print(upload_ids[i])
-    print("******************************************************************************************************************************************************************")
+if os.path.exists("./NOMAD-Dir"):
+    shutil.rmtree("./NOMAD-Dir")
+os.makedirs("./NOMAD-Dir",exist_ok=True)
+with open("./NOMAD-Dir/log.txt","w") as file:
+    for i in range(len(wget_path)):
+        fd=requests.get(wget_path[i])
+        if fd.status_code==200:
+            open("./NOMAD-Dir/OUTCAR-{}".format(i+1),"wb").write(fd.content)
+            print("file created: {}".format(wget_path[i]))
+            file.writelines("OUTCAR-{}, {}".format(i+1,wget_path[i]))
+            file.writelines("\n")
+        if fd.status_code==404:
+            print("file not found: {}".format(wget_path[i]))
+        print(raw_path[i])
+        print(upload_ids[i])
+        print("******************************************************************************************************************************************************************")
+file.close()
