@@ -1,7 +1,6 @@
 import requests
 import json
 from os import system
-from urllib.error import HTTPError
 base_url = 'http://nomad-lab.eu/prod/v1/api/v1'
 import os
 response_page = requests.post(
