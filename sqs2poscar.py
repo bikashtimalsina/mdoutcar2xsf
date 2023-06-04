@@ -73,8 +73,6 @@ class sqs2poscar:
                 nfile.writelines("{:.8f} {:.8f} {:.8f}".format(cart_coordinates[indexmap[i]][0],cart_coordinates[indexmap[i]][1],cart_coordinates[indexmap[i]][2]))
                 nfile.writelines("\n")          
         nfile.close()
-        print(elemname)
-        print(atomcount)
 
 check=sqs2poscar(filename)
 check.read_bestsqs()
