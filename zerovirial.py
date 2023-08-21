@@ -23,8 +23,8 @@ vir_zero_train=[]
 vir_zero_test=[]
 for i in range(len(virial_change_train)):
 	pattern="(?<=\")(.*?)(?=\")"
-	vir_each=re.findall(pattern,virial_change_train[i].split("=")[3])
-	virlist=vir_each[0].split()
+	vir_each=re.findall(pattern,virial_change_train[i])[2].split()
+	virlist=vir_each
 	vxx=virlist[0]; vxy=virlist[1]; vxz=virlist[2]
 	vyx=virlist[3]; vyy=virlist[4]; vyz=virlist[5]
 	vzx=virlist[6]; vzy=virlist[7]; vzz=virlist[8]
@@ -39,8 +39,8 @@ for i in range(len(virial_change_train)):
 	vir_zero_train.append("=".join(virial_off_nop))
 for i in range(len(virial_change_test)):
 	pattern="(?<=\")(.*?)(?=\")"
-	vir_each=re.findall(pattern,virial_change_test[i].split("=")[3])
-	virlist=vir_each[0].split()
+	vir_each=re.findall(pattern,virial_change_test[i])[2].split()
+	virlist=vir_each
 	vxx=virlist[0]; vxy=virlist[1]; vxz=virlist[2]
 	vyx=virlist[3]; vyy=virlist[4]; vyz=virlist[5]
 	vzx=virlist[6]; vzy=virlist[7]; vzz=virlist[8]
